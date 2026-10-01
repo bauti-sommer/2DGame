@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -17,16 +18,29 @@ public class Player extends Entity {
 	GamePanel gp;
 	KeyHandler keyH;
 	
+	public int screenX;
+	public int screenY;
+
+	
 	public Player(GamePanel gp, KeyHandler keyH) {
 		this.gp = gp;
 		this.keyH = keyH;
+		
+		solidArea = new Rectangle();
+		solidArea.x = 8;
+		solidArea.y = 16;
+		solidArea.width = 32;
+		solidArea.height = 32;
+		
 		setDefaultValues();
 		getPlayerImage();
 	}
 	
 	public void setDefaultValues() {
-		x = 100;
-		y = 100;
+		worldX = 100;
+		worldY = 100;
+		screenX = 100;
+		screenY = 100;
 		speed = 4;
 		direction = "down";
 		
@@ -48,33 +62,81 @@ public class Player extends Entity {
 	}
 	
 	public void update() {
+		
+		if(keyH.upPressed == true || keyH.downPressed == true || 
+				keyH.leftPressed == true || keyH.rightPressed == true) {
+		
 		if(keyH.upPressed == true) { 
-			y -= speed;
+			
 			direction = "up";
-			spriteCounter++;
+			
 		}
 		if(keyH.downPressed == true) {
-			y += speed;
+	
 			direction = "down";
-			spriteCounter++;
+			
 		}
 		if(keyH.leftPressed == true) {
-			x -= speed;
+
 			direction = "left";
-			spriteCounter++;
+			
 		}
 		if(keyH.rightPressed == true) {
-			x += speed;
+	
 			direction = "right";
-			spriteCounter++;
+			
 		}
+		collisionOn = false;
+		gp.cChecker.checkTile(this);
 		
+		if (collisionOn == false) {
+		    switch(direction) {
+		    case "up":  
+		        
+		        screenY -= speed;
+		        if (screenY < 0) {
+		            gp.tileM.roomY--;
+		            screenY = gp.screenLength; 
+		        }
+		        break;
+
+		    case "down":
+		        
+		        screenY += speed;
+		        if (screenY >= gp.screenLength) {
+		            gp.tileM.roomY++;
+		            screenY = 0; 
+		        }
+		        break;
+
+		    case "left":
+		        
+		        screenX -= speed;
+		        if (screenX < 0) {
+		            gp.tileM.roomX--;
+		            screenX = gp.screenWidth;
+		        }
+		        break;
+
+		    case "right": 
+		        
+		        screenX += speed;
+		        if (screenX >= gp.screenWidth) {
+		            gp.tileM.roomX++;
+		            screenX = 0; 
+		        }
+		        break;
+		    }
+		}
+		worldX = (gp.tileM.roomX * gp.screenWidth) + screenX;
+		worldY = (gp.tileM.roomY * gp.screenLength) + screenY;
+		spriteCounter++;
 		
 		if(spriteCounter > 10) {
 			if(spriteNum == 1) spriteNum = 2;
 			else if(spriteNum == 2) spriteNum = 1;
 			spriteCounter = 0;
-		}
+		}}
 	}
 	
 	public void draw(Graphics2D g2) {
@@ -116,6 +178,6 @@ public class Player extends Entity {
 		break;
 		}
 		
-		g2.drawImage(image, x, y,gp.tilesize, gp.tilesize, null);
+		g2.drawImage(image, screenX, screenY,gp.tilesize, gp.tilesize, null);
 	}
 }
