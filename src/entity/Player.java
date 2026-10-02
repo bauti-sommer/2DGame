@@ -20,6 +20,7 @@ public class Player extends Entity {
 	
 	public int screenX;
 	public int screenY;
+	public int keys = 0;
 
 	
 	public Player(GamePanel gp, KeyHandler keyH) {
@@ -31,7 +32,9 @@ public class Player extends Entity {
 		solidArea.y = 16;
 		solidArea.width = 32;
 		solidArea.height = 32;
-		
+		solidAreaDefaultX = solidArea.x;
+		solidAreaDefaultY = solidArea.y;
+
 		setDefaultValues();
 		getPlayerImage();
 	}
@@ -88,6 +91,8 @@ public class Player extends Entity {
 		}
 		collisionOn = false;
 		gp.cChecker.checkTile(this);
+		int index = gp.cChecker.checkObject(this, true);
+		pickUpObject(index);
 		
 		if (collisionOn == false) {
 		    switch(direction) {
@@ -180,4 +185,23 @@ public class Player extends Entity {
 		
 		g2.drawImage(image, screenX, screenY,gp.tilesize, gp.tilesize, null);
 	}
+	
+	public void pickUpObject(int i) {
+		if(i != 999) {
+			String name = gp.obj[i].name;
+			
+			switch(name) {
+			case "Key":
+				keys++;
+				gp.obj[i] = null;
+				break;
+			case "Door":
+				if(keys>0) {
+					gp.obj[i] = null;
+				}
+				break;
+			}
+		}
+	}
+	
 }
