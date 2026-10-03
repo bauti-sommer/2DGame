@@ -1,6 +1,5 @@
 package entity;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -28,10 +27,10 @@ public class Player extends Entity {
 		this.keyH = keyH;
 		
 		solidArea = new Rectangle();
-		solidArea.x = 8;
-		solidArea.y = 16;
-		solidArea.width = 32;
-		solidArea.height = 32;
+		solidArea.x = 12;
+		solidArea.y = 12;
+		solidArea.width = 24;
+		solidArea.height = 24;
 		solidAreaDefaultX = solidArea.x;
 		solidAreaDefaultY = solidArea.y;
 
@@ -101,14 +100,14 @@ public class Player extends Entity {
 		        screenY -= speed;
 		        if (screenY < 0) {
 		            gp.tileM.roomY--;
-		            screenY = gp.screenLength; 
+		            screenY = gp.screenLength - gp.tilesize; 
 		        }
 		        break;
 
 		    case "down":
 		        
 		        screenY += speed;
-		        if (screenY >= gp.screenLength) {
+		        if (screenY >= gp.screenLength - gp.tilesize) {
 		            gp.tileM.roomY++;
 		            screenY = 0; 
 		        }
@@ -119,14 +118,14 @@ public class Player extends Entity {
 		        screenX -= speed;
 		        if (screenX < 0) {
 		            gp.tileM.roomX--;
-		            screenX = gp.screenWidth;
+		            screenX = gp.screenWidth - gp.tilesize;
 		        }
 		        break;
 
 		    case "right": 
 		        
 		        screenX += speed;
-		        if (screenX >= gp.screenWidth) {
+		        if (screenX >= gp.screenWidth - gp.tilesize) {
 		            gp.tileM.roomX++;
 		            screenX = 0; 
 		        }
@@ -192,6 +191,7 @@ public class Player extends Entity {
 			
 			switch(name) {
 			case "Key":
+				gp.playSF(1);
 				keys++;
 				gp.obj[i] = null;
 				break;
@@ -200,6 +200,9 @@ public class Player extends Entity {
 					gp.obj[i] = null;
 				}
 				break;
+			case "Boots":
+				speed += 2;
+				gp.obj[i] = null;
 			}
 		}
 	}
